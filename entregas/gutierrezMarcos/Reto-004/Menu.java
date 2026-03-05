@@ -2,15 +2,15 @@ import java.util.Scanner;
 
 public class Menu {
 
-    Scanner scanner = new Scanner(System.in);
-    int eleccion;
-    Cancion currentSong;
-    List canciones;
-    List historial;
-    List favoritos;
-    String eleccionString;
-    boolean aleatorioActivado = false;
-    boolean repetirActivado = false;
+    private Scanner scanner = new Scanner(System.in);
+    private int eleccion;
+    private Cancion currentSong;
+    private List canciones;
+    private List historial;
+    private List favoritos;
+    private String eleccionString;
+    private boolean aleatorioActivado = false;
+    private boolean repetirActivado = false;
     private List playlists = new List();
 
     public Menu(Cancion currentSong, List canciones) {
@@ -22,7 +22,7 @@ public class Menu {
         mainMenu();
     }
 
-    private void eleccion(){
+    private void pedirEleccion() {
         eleccion = scanner.nextInt();
         scanner.nextLine();
         pause(2);
@@ -30,13 +30,13 @@ public class Menu {
     }
 
     public void mainMenu() {
-        System.out.println("=== MENÚ PRINCIPAL ===\n" + //
-                "1. Reproducción\n" + //
-                "2. Biblioteca\n" + //
+        System.out.println("=== MENÚ PRINCIPAL ===\n" +
+                "1. Reproducción\n" +
+                "2. Biblioteca\n" +
                 "3. Salir");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> menuReproduccion();
@@ -48,18 +48,18 @@ public class Menu {
 
     public void menuReproduccion() {
         System.out.println(
-                "=== MENÚ REPRODUCCIÓN ===\n" + //
-                        "1. Ver canción actual\n" + //
-                        "2. Reproducir siguiente\n" + //
-                        "3. Reproducir anterior\n" + //
-                        "4. Ver cola de reproducción\n" + //
-                        "5. Ver historial\n" + //
-                        "6. Activar/desactivar aleatorio\n" + //
-                        "7. Activar/desactivar repetición\n" + //
+                "=== MENÚ REPRODUCCIÓN ===\n" +
+                        "1. Ver canción actual\n" +
+                        "2. Reproducir siguiente\n" +
+                        "3. Reproducir anterior\n" +
+                        "4. Ver cola de reproducción\n" +
+                        "5. Ver historial\n" +
+                        "6. Activar/desactivar aleatorio\n" +
+                        "7. Activar/desactivar repetición\n" +
                         "8. Volver al menú principal");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> verCancionActual();
@@ -87,13 +87,12 @@ public class Menu {
         switch (eleccionString.toUpperCase()) {
             case "S" -> reproducirCancion();
             default -> mainMenu();
-
         }
     }
 
     private void reproducirCancion() {
         System.out.println(canciones.mostrar());
-        eleccion();
+        pedirEleccion();
 
         currentSong = canciones.getCancion(eleccion);
 
@@ -168,19 +167,19 @@ public class Menu {
     }
 
     public void menuBiblioteca() {
-        System.out.println("=== MENÚ BIBLIOTECA ===\n" + //
-                "1. Añadir canción a favoritos\n" + //
-                "2. Eliminar canción de favoritos\n" + //
-                "3. Ver canciones favoritas\n" + //
-                "4. Crear nueva playlist\n" + //
-                "5. Añadir canción a playlist\n" + //
-                "6. Eliminar canción de playlist\n" + //
-                "7. Ver playlists\n" + //
-                "8. Ver canciones de una playlist\n" + //
+        System.out.println("=== MENÚ BIBLIOTECA ===\n" +
+                "1. Añadir canción a favoritos\n" +
+                "2. Eliminar canción de favoritos\n" +
+                "3. Ver canciones favoritas\n" +
+                "4. Crear nueva playlist\n" +
+                "5. Añadir canción a playlist\n" +
+                "6. Eliminar canción de playlist\n" +
+                "7. Ver playlists\n" +
+                "8. Ver canciones de una playlist\n" +
                 "9. Volver al menú principal");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> añadirCancionAFavoritos();
@@ -200,7 +199,7 @@ public class Menu {
         System.out.println("Seleccione una canción para añadir a favoritos:");
         System.out.println(canciones.mostrar());
 
-        eleccion();
+        pedirEleccion();
 
         Cancion seleccionada = canciones.getCancion(eleccion);
         if (seleccionada != null && !seleccionada.isFavorita()) {
@@ -246,7 +245,7 @@ public class Menu {
         List playlist = encontrarPlaylist(nombrePlaylist);
         if (playlist != null) {
             System.out.print("Ingrese el título de la canción: ");
-            eleccion();
+            pedirEleccion();
             Cancion cancion = canciones.getCancion(eleccion);
             if (cancion != null) {
                 playlist.add(cancion);
@@ -265,7 +264,7 @@ public class Menu {
         List playlist = encontrarPlaylist(nombrePlaylist);
         if (playlist != null) {
             System.out.print("Ingrese el título de la canción a eliminar: ");
-            eleccion();
+            pedirEleccion();
             playlist.remove(eleccion);
             System.out.println("Canción eliminada de la playlist.");
         } else {

@@ -2,41 +2,39 @@ import java.util.Scanner;
 
 public class Menu {
 
-    Scanner scanner = new Scanner(System.in);
-    int eleccion;
-    Cancion currentSong;
-    List canciones;
-    List historial;
-    List favoritos;
-    String eleccionString;
-    boolean aleatorioActivado = false;
-    boolean repetirActivado = false;
-    private List playlists = new List();
+    private Scanner scanner = new Scanner(System.in);
+    private int eleccion;
+    private Cancion cancionActual;
+    private List canciones;
+    private List historial;
+    private List favoritos;
+    private String entradaTexto;
+    private List listasReproduccion = new List();
 
-    public Menu(Cancion currentSong, List canciones) {
+    public Menu(Cancion cancionActual, List canciones) {
         this.canciones = canciones;
         this.historial = new List();
         this.favoritos = new List();
-        this.currentSong = currentSong;
-        cleanScreen();
-        mainMenu();
+        this.cancionActual = cancionActual;
+        limpiarPantalla();
+        menuPrincipal();
     }
 
-    private void eleccion(){
+    private void pedirEleccion() {
         eleccion = scanner.nextInt();
         scanner.nextLine();
-        pause(2);
-        cleanScreen();
+        pausar(2);
+        limpiarPantalla();
     }
 
-    public void mainMenu() {
-        System.out.println("=== MENÚ PRINCIPAL ===\n" + //
-                "1. Reproducción\n" + //
-                "2. Biblioteca\n" + //
+    public void menuPrincipal() {
+        System.out.println("=== MENÚ PRINCIPAL ===\n" +
+                "1. Reproducción\n" +
+                "2. Biblioteca\n" +
                 "3. Salir");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> menuReproduccion();
@@ -48,18 +46,16 @@ public class Menu {
 
     public void menuReproduccion() {
         System.out.println(
-                "=== MENÚ REPRODUCCIÓN ===\n" + //
-                        "1. Ver canción actual\n" + //
-                        "2. Reproducir siguiente\n" + //
-                        "3. Reproducir anterior\n" + //
-                        "4. Ver cola de reproducción\n" + //
-                        "5. Ver historial\n" + //
-                        "6. Activar/desactivar aleatorio\n" + //
-                        "7. Activar/desactivar repetición\n" + //
-                        "8. Volver al menú principal");
+                "=== MENÚ REPRODUCCIÓN ===\n" +
+                        "1. Ver canción actual\n" +
+                        "2. Reproducir siguiente\n" +
+                        "3. Reproducir anterior\n" +
+                        "4. Ver cola de reproducción\n" +
+                        "5. Ver historial\n" +
+                        "6. Volver al menú principal");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> verCancionActual();
@@ -67,75 +63,68 @@ public class Menu {
             case 3 -> reproducirAnterior();
             case 4 -> mostrarCola();
             case 5 -> verHistorial();
-            case 6 -> toggleAleatorio();
-            case 7 -> toggleRepeticion();
-            case 8 -> mainMenu();
+            case 6 -> menuPrincipal();
             default -> menuReproduccion();
         }
     }
 
     private void verCancionActual() {
-        if (currentSong == null) {
+        if (cancionActual == null) {
             System.out.println("No hay canciones en reproducción\n");
             System.out.print("¿Desea comenzar a reproducir? (S/N): ");
-            eleccionString = scanner.nextLine();
+            entradaTexto = scanner.nextLine();
             System.out.println();
         } else {
-            System.out.println("Estas reproduciendo " + currentSong.toString());
+            System.out.println("Estas reproduciendo " + cancionActual.toString());
         }
 
-        switch (eleccionString.toUpperCase()) {
+        switch (entradaTexto != null ? entradaTexto.toUpperCase() : "") {
             case "S" -> reproducirCancion();
-            default -> mainMenu();
-
+            default -> menuPrincipal();
         }
     }
 
     private void reproducirCancion() {
         System.out.println(canciones.mostrar());
-        eleccion();
+        pedirEleccion();
 
-        currentSong = canciones.getCancion(eleccion);
+        cancionActual = canciones.getCancion(eleccion);
 
-        System.out.println("Estas reproduciendo " + currentSong.toString());
-        historial.insertEnd(currentSong);
+        System.out.println("Estas reproduciendo " + cancionActual.toString());
+        historial.insertEnd(cancionActual);
         menuReproduccion();
     }
 
     private void reproducirSiguiente() {
-        if (currentSong != null) {
-            currentSong = canciones.next(currentSong);
-            System.out.println("Estas reproduciendo " + currentSong.toString());
-            historial.insertEnd(currentSong);
+        if (cancionActual != null) {
+            cancionActual = canciones.next(cancionActual);
+            System.out.println("Estas reproduciendo " + cancionActual.toString());
+            historial.insertEnd(cancionActual);
         } else {
             System.out.println("No hay más canciones en la lista.");
         }
-        pause(2);
-        cleanScreen();
-        menuReproduccion();
+        retornarAMenuReproduccion();
     }
 
     private void reproducirAnterior() {
-        if (currentSong != null) {
-            currentSong = canciones.previous(currentSong);
-            System.out.println("Estas reproduciendo " + currentSong.toString());
+        if (cancionActual != null) {
+            cancionActual = canciones.previous(cancionActual);
+            System.out.println("Estas reproduciendo " + cancionActual.toString());
         } else {
             System.out.println("No hay más canciones en la lista.");
         }
-        pause(2);
-        cleanScreen();
-        menuReproduccion();
+        retornarAMenuReproduccion();
     }
 
     private void mostrarCola() {
-        if (currentSong != null) {
-            System.out.println(canciones.mostrarDesde(currentSong.toString()));
+        if (cancionActual != null) {
+            System.out.println(canciones.mostrarDesde(cancionActual.toString()));
             scanner.nextLine();
         } else {
             System.out.println("No tienes ninguna canción ni ninguna lista en reproducción");
-            pause(2);
+            pausar(2);
         }
-        cleanScreen();
+        limpiarPantalla();
         menuReproduccion();
     }
 
@@ -144,54 +133,44 @@ public class Menu {
             System.out.println("=== Historial de Canciones Reproducidas ===");
             System.out.println(historial.mostrar());
             scanner.nextLine();
-            cleanScreen();
+            limpiarPantalla();
             menuReproduccion();
         } else {
             System.out.println("No tienes historial de reproduccion");
         }
     }
 
-    private void toggleAleatorio() {
-        aleatorioActivado = !aleatorioActivado;
-        System.out.println("Aleatorio " + (aleatorioActivado ? "activado" : "desactivado"));
-        pause(2);
-        cleanScreen();
-        menuReproduccion();
-    }
-
-    private void toggleRepeticion() {
-        repetirActivado = !repetirActivado;
-        System.out.println("Repetición " + (repetirActivado ? "activada" : "desactivada"));
-        pause(2);
-        cleanScreen();
+    private void retornarAMenuReproduccion() {
+        pausar(2);
+        limpiarPantalla();
         menuReproduccion();
     }
 
     public void menuBiblioteca() {
-        System.out.println("=== MENÚ BIBLIOTECA ===\n" + //
-                "1. Añadir canción a favoritos\n" + //
-                "2. Eliminar canción de favoritos\n" + //
-                "3. Ver canciones favoritas\n" + //
-                "4. Crear nueva playlist\n" + //
-                "5. Añadir canción a playlist\n" + //
-                "6. Eliminar canción de playlist\n" + //
-                "7. Ver playlists\n" + //
-                "8. Ver canciones de una playlist\n" + //
+        System.out.println("=== MENÚ BIBLIOTECA ===\n" +
+                "1. Añadir canción a favoritos\n" +
+                "2. Eliminar canción de favoritos\n" +
+                "3. Ver canciones favoritas\n" +
+                "4. Crear nueva lista de reproducción\n" +
+                "5. Añadir canción a lista de reproducción\n" +
+                "6. Eliminar canción de lista de reproducción\n" +
+                "7. Ver listas de reproducción\n" +
+                "8. Ver canciones de una lista\n" +
                 "9. Volver al menú principal");
 
         System.out.print("Seleccione una opción: ");
-        eleccion();
+        pedirEleccion();
 
         switch (eleccion) {
             case 1 -> añadirCancionAFavoritos();
             case 2 -> eliminarCancionDeFavoritos();
             case 3 -> verCancionesFavoritas();
-            case 4 -> crearPlaylist();
-            case 5 -> agregarCancionAPlaylist();
-            case 6 -> eliminarCancionDePlaylist();
-            case 7 -> verPlaylists();
-            case 8 -> verCancionesEnPlaylist();
-            case 9 -> mainMenu();
+            case 4 -> crearListaReproduccion();
+            case 5 -> agregarCancionALista();
+            case 6 -> eliminarCancionDeLista();
+            case 7 -> verListasReproduccion();
+            case 8 -> verCancionesEnLista();
+            case 9 -> menuPrincipal();
             default -> menuBiblioteca();
         }
     }
@@ -200,7 +179,7 @@ public class Menu {
         System.out.println("Seleccione una canción para añadir a favoritos:");
         System.out.println(canciones.mostrar());
 
-        eleccion();
+        pedirEleccion();
 
         Cancion seleccionada = canciones.getCancion(eleccion);
         if (seleccionada != null && !seleccionada.isFavorita()) {
@@ -217,95 +196,100 @@ public class Menu {
         System.out.println(canciones.mostrarFavoritas());
 
         scanner.nextLine();
-        cleanScreen();
+        limpiarPantalla();
         menuBiblioteca();
     }
 
-    static void cleanScreen() {
+    static void limpiarPantalla() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
-    static void pause(int segundos) {
+    static void pausar(int segundos) {
         try {
-            Thread.sleep(1000 * segundos);
+            Thread.sleep(1000L * segundos);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Pausa interrumpida.");
         }
     }
 
-    private void crearPlaylist() {
-        System.out.print("Ingrese el nombre de la nueva playlist: ");
-        String nombrePlaylist = scanner.nextLine();
-        playlists.crearPlaylist(new List(nombrePlaylist));
-        System.out.println("Playlist creada.");
+    private List pedirYBuscarLista() {
+        System.out.print("Ingrese el nombre de la lista de reproducción: ");
+        String nombreLista = scanner.nextLine();
+        return encontrarLista(nombreLista);
     }
 
-    private void agregarCancionAPlaylist() {
-        System.out.print("Ingrese el nombre de la playlist: ");
-        String nombrePlaylist = scanner.nextLine();
-        List playlist = encontrarPlaylist(nombrePlaylist);
-        if (playlist != null) {
+    private void crearListaReproduccion() {
+        System.out.print("Ingrese el nombre de la nueva lista de reproducción: ");
+        String nombreLista = scanner.nextLine();
+        listasReproduccion.crearPlaylist(new List(nombreLista));
+        System.out.println("Lista de reproducción creada.");
+    }
+
+    private void agregarCancionALista() {
+        List lista = pedirYBuscarLista();
+        
+        if (lista != null) {
             System.out.print("Ingrese el título de la canción: ");
-            eleccion();
+            pedirEleccion();
             Cancion cancion = canciones.getCancion(eleccion);
             if (cancion != null) {
-                playlist.add(cancion);
-                System.out.println("Canción añadida a la playlist.");
+                lista.add(cancion);
+                System.out.println("Canción añadida a la lista.");
             } else {
                 System.out.println("Canción no encontrada.");
             }
         } else {
-            System.out.println("Playlist no encontrada.");
+            System.out.println("Lista no encontrada.");
         }
     }
 
-    private void eliminarCancionDePlaylist() {
-        System.out.print("Ingrese el nombre de la playlist: ");
-        String nombrePlaylist = scanner.nextLine();
-        List playlist = encontrarPlaylist(nombrePlaylist);
-        if (playlist != null) {
+    private void eliminarCancionDeLista() {
+        List lista = pedirYBuscarLista();
+        
+        if (lista != null) {
             System.out.print("Ingrese el título de la canción a eliminar: ");
-            eleccion();
-            playlist.remove(eleccion);
-            System.out.println("Canción eliminada de la playlist.");
+            pedirEleccion();
+            lista.remove(eleccion);
+            System.out.println("Canción eliminada de la lista.");
         } else {
-            System.out.println("Playlist no encontrada.");
+            System.out.println("Lista no encontrada.");
         }
         menuBiblioteca();
     }
 
-    private void verPlaylists() {
-        System.out.println("=== Playlists ===");
-        Node current = playlists.getFirst();
+    private void verListasReproduccion() {
+        System.out.println("=== Listas de Reproducción ===");
+        Node nodoActual = listasReproduccion.getFirst();
         int indice = 1;
-        while (current != null) {
-            System.out.println(indice + ". " + current.getPlaylist().getName());
-            current = current.getNext();
+        while (nodoActual != null) {
+            System.out.println(indice + ". " + nodoActual.getPlaylist().getName()); // getPlaylist() de la clase Node
+            nodoActual = nodoActual.getNext();
             indice++;
         }
         scanner.nextLine();
         menuBiblioteca();
     }
 
-    private void verCancionesEnPlaylist() {
-        System.out.print("Ingrese el nombre de la playlist: ");
-        String nombrePlaylist = scanner.nextLine();
-        List playlist = encontrarPlaylist(nombrePlaylist);
-        if (playlist != null) {
-            System.out.println(playlist.mostrarCanciones());
+    private void verCancionesEnLista() {
+        List lista = pedirYBuscarLista();
+        
+        if (lista != null) {
+            System.out.println(lista.mostrarCanciones());
         } else {
-            System.out.println("Playlist no encontrada.");
-            mainMenu();
+            System.out.println("Lista no encontrada.");
+            menuPrincipal();
         }
     }
 
-    private List encontrarPlaylist(String nombre) {
-        Node current = playlists.getFirst();
-        while (current != null) {
-            if (current.getPlaylist().getName().equalsIgnoreCase(nombre)) {
-                return current.getPlaylist();
+    private List encontrarLista(String nombre) {
+        Node nodoActual = listasReproduccion.getFirst();
+        while (nodoActual != null) {
+            if (nodoActual.getPlaylist().getName().equalsIgnoreCase(nombre)) {
+                return nodoActual.getPlaylist();
             }
-            current = current.getNext();
+            nodoActual = nodoActual.getNext();
         }
         return null;
     }
